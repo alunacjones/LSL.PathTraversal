@@ -14,9 +14,9 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Version>1.0.1</Version>
     <PackageVersion>1.0.1</PackageVersion>
-    <PackageTags></PackageTags>
+    <PackageTags>path;traversal;traverse;file;match;heirarchy;search</PackageTags>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
-    <PackageDescription>Description here</PackageDescription>
+    <PackageDescription>A path traversal library to match a file by moving up the directory structure from a start folder</PackageDescription>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/alunacjones/LSL.PathTraversal</RepositoryUrl>
     <Authors>alunacjones</Authors>

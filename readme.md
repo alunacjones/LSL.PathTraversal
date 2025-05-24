@@ -4,10 +4,30 @@
 
 # LSL.PathTraversal
 
-Provide package documentation here.
+This library provides a static method for enumerating up a directory hierarchy from a given initial path
+or the current directory if no initial path is provided.
 
+## Locating a file in the hierarchy
+
+The following example attempts to locate a file in the hierarchy, starting from 
+the value of `Directory.GetCurrentDirectory()`:
+
+```csharp
+// Necessary usings:
+using LSL.PathTraversal;
+
+...
+
+var fileInfo = PathTraversal.Enumerate()
+    // GetFileInfo is an extension method to the DirectoryInfo class
+    .Select(directoryInfo => directoryInfo.GetFileInfo(filename))
+    .FirstOrDefault(fileInfo => fileInfo.Exists)
+
+// If the file was found then fileInfo will provide all information
+// otherwise fileInfo will be null
+```
 <!-- HIDE -->
-## Further Documentation
+<!-- ## Further Documentation
 
-More in-depth documentation can be found [here](https://alunacjones.github.io/LSL.PathTraversal/)
+More in-depth documentation can be found [here](https://alunacjones.github.io/LSL.PathTraversal/) -->
 <!-- END:HIDE -->

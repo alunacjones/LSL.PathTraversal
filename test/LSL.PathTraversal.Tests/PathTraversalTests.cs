@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Diamond.Core.System.TemporaryFolder;
 using FluentAssertions;
 using NUnit.Framework;
@@ -9,82 +10,64 @@ namespace LSL.PathTraversal.Tests;
 public class PathTraversalTests
 {
     [Test]
-    public void Traverse_WithNoOptions_ShouldNotThrowAnArgumentException()
+    public void Enumerate_WithAValidPath_ShouldEnumerateAsExpected()
     {
-        PathTraversal.Traverse().Should().BeNull();
+        PathTraversal.Enumerate().Should().HaveCountGreaterThan(0);
     }
 
     [Test]
-    public void Traverse_WithDefaultOptionsAndNoMatch_ShouldReturnNull()
+    public void Enumerate_WithAnInvalidPath_ShouldThrowTheExpectedException()
     {
-        var result = PathTraversal.Traverse(new()
-        {
-            FileMatcher = directoryInfo => directoryInfo.FileExists(".env")
-        });
-
-        result.Should().BeNull();
+        new Action(() => _ = PathTraversal.Enumerate("not-a-folder").ToList())
+            .Should()
+            .Throw<ArgumentException>()
+            .And
+            .ParamName
+            .Should()
+            .Be("initialPath");
     }
 
     [Test]
-    public void Traverse_WithDefaultOptions_AndAFileMatch_ShouldReturnTheDirectoryInfoThatContainsTheFile()
+    public void Enumerate_WithAValidPath_AndMatchingASingleFileThat_DoesNotExist_ShouldReturnNoMatches()
+    {
+        PathTraversal.Enumerate()
+            .Select(di => di.GetFileInfo(".env"))
+            .FirstOrDefault(fi => fi.Exists)
+            .Should()
+            .BeNull();
+    }
+
+    [Test]
+    public void Enumerate_WithAValidPath_AndMatchingASingleFileThat_DoesExist_ShouldReturnTheMatchedFile()
     {
         using var tempFolder = new TemporaryFolderFactory().Create();
         var startFolder = Directory.CreateDirectory("test/deeper");
+        var filename = ".env";
 
-        File.WriteAllText(Path.Combine(startFolder.FullName, ".env"), "content");
+        File.WriteAllText(Path.Combine(startFolder.FullName, filename), "content");
 
-        var result = PathTraversal.Traverse(new()
-        {
-            StartPath = startFolder.FullName,
-            FileMatcher = directoryInfo => directoryInfo.FileExists(".env")
-        });
-
-        result.Should().NotBeNull();
+        PathTraversal.Enumerate(startFolder.FullName)
+            .Select(directoryInfo => directoryInfo.GetFileInfo(filename))
+            .FirstOrDefault(fileInfo => fileInfo.Exists)
+            .Should()
+            .NotBeNull();
     }
-
+    
     [Test]
-    public void TraverseForFile_WithDefaultOptionsAndNoMatch_ShouldReturnNull()
-    {
-        var result = PathTraversal.Traverse(".env");
-
-        result.Should().BeNull();
-    }
-
-    [Test]
-    public void TraverseForFile_WithDefaultOptions_AndAFileMatch_ShouldReturnTheDirectoryInfoThatContainsTheFile()
+    public void Enumerate_WithAValidPath_AndMatchingANullSingleFile_ShouldThrowTheExpectedException()
     {
         using var tempFolder = new TemporaryFolderFactory().Create();
         var startFolder = Directory.CreateDirectory("test/deeper");
+        var filename = (string)null;
 
-        File.WriteAllText(Path.Combine(startFolder.FullName, ".env"), "content");
-
-        var result = PathTraversal.Traverse(
-            ".env",
-            new PathTraversalOptions
-            {
-                StartPath = startFolder.FullName,
-                FileMatcher = directoryInfo => directoryInfo.FileExists(".env")
-            });
-
-        result.Should().NotBeNull();
-    }
-
-    [Test]
-    public void TraverseForFile_WithCustomPathChecker_AndNoFileMatch_ShouldReturnNull()
-    {
-        using var tempFolder = new TemporaryFolderFactory().Create();
-        var startFolder = Directory.CreateDirectory(Path.Combine(tempFolder.FullPath, "test/deeper"));
-
-        File.WriteAllText(Path.Combine(startFolder.Parent.Parent.FullName, ".env"), "content");
-
-        var result = PathTraversal.Traverse(
-            ".env",
-            new PathTraversalOptions
-            {
-                StartPath = startFolder.FullName,
-                ShouldStopTraversal = directoryInfo => directoryInfo.FullName == startFolder.Parent.FullName
-            });
-
-        result.Should().BeNull();
-    }             
+        new Action(() => _ = PathTraversal.Enumerate(startFolder.FullName)
+            .Select(di => di.GetFileInfo(filename))
+            .FirstOrDefault(fi => fi.Exists))
+            .Should()
+            .Throw<ArgumentNullException>()
+            .And
+            .ParamName
+            .Should()
+            .Be("fileName");
+    }    
 }

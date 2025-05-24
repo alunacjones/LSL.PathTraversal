@@ -8,11 +8,15 @@ namespace LSL.PathTraversal;
 public static class DirectoryInfoExtensions
 {
     /// <summary>
-    /// Helper method to check for a file's existence in the given <see cref="DirectoryInfo"/>
+    /// A helper method to get a <see cref="FileInfo"/> for the given filename.
+    /// This can then be checked for file existence in your LINQ query.
     /// </summary>
     /// <param name="directoryInfo"></param>
     /// <param name="fileName"></param>
     /// <returns></returns>
-    public static bool FileExists(this DirectoryInfo directoryInfo, string fileName) =>
-        File.Exists(Path.Combine(directoryInfo.GuardAgainstNull(nameof(directoryInfo)).FullName, fileName));
+    public static FileInfo GetFileInfo(this DirectoryInfo directoryInfo, string fileName) =>
+        new(Path.Combine(
+            directoryInfo.GuardAgainstNull(nameof(directoryInfo)).FullName,
+            fileName.GuardAgainstNull(nameof(fileName)))
+        );
 }
