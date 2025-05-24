@@ -1,0 +1,7 @@
+{
+    "String": "inner1-string",
+    "StringArray": [
+        "inner1-item1",
+        "inner1-item2"
+    ]        
+}
