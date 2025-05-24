@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,13 +16,13 @@ public class PathTraversalTests
     [Test]
     public void Enumerate_WithAValidPath_ShouldEnumerateAsExpected()
     {
-        PathTraversal.Enumerate().Should().HaveCountGreaterThan(0);
+        TraversePath.Enumerate().Should().HaveCountGreaterThan(0);
     }
 
     [Test]
     public void Enumerate_WithAnInvalidPath_ShouldThrowTheExpectedException()
     {
-        new Action(() => _ = PathTraversal.Enumerate("not-a-folder").ToList())
+        new Action(() => _ = TraversePath.Enumerate("not-a-folder").ToList())
             .Should()
             .Throw<ArgumentException>()
             .And
@@ -35,7 +34,7 @@ public class PathTraversalTests
     [Test]
     public void Enumerate_WithAValidPath_AndMatchingASingleFileThat_DoesNotExist_ShouldReturnNoMatches()
     {
-        PathTraversal.Enumerate()
+        TraversePath.Enumerate()
             .Select(di => di.GetFileInfo(".env"))
             .FirstOrDefault(fi => fi.Exists)
             .Should()
@@ -51,7 +50,7 @@ public class PathTraversalTests
 
         File.WriteAllText(Path.Combine(startFolder.FullName, filename), "content");
 
-        PathTraversal.Enumerate(startFolder.FullName)
+        TraversePath.Enumerate(startFolder.FullName)
             .Select(directoryInfo => directoryInfo.GetFileInfo(filename))
             .FirstOrDefault(fileInfo => fileInfo.Exists)
             .Should()
@@ -65,7 +64,7 @@ public class PathTraversalTests
         var startFolder = Directory.CreateDirectory("test/deeper");
         var filename = (string)null;
 
-        new Action(() => _ = PathTraversal.Enumerate(startFolder.FullName)
+        new Action(() => _ = TraversePath.Enumerate(startFolder.FullName)
             .Select(di => di.GetFileInfo(filename))
             .FirstOrDefault(fi => fi.Exists))
             .Should()
@@ -81,7 +80,7 @@ public class PathTraversalTests
     {
         using var currentFolder = new DC.DisposableCurrentDirectory("TestData/Merging/inner1/inner2");
 
-        var files = PathTraversal.Enumerate()
+        var files = TraversePath.Enumerate()
             .Select(di => di.GetFileInfo("test.json"))
             .TakeWhile(fi => fi.Directory.Name != "TestData")
             .Reverse();
@@ -106,7 +105,7 @@ public class PathTraversalTests
                     "inner2-item3"
                 ]
             });
-            
+
         files.Should().HaveCount(3);
     }
 

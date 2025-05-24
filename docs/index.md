@@ -18,7 +18,7 @@ using LSL.PathTraversal;
 
 ...
 
-var fileInfo = PathTraversal.Enumerate()
+var fileInfo = TraversePath.Enumerate()
     // GetFileInfo is an extension method to the DirectoryInfo class
     .Select(directoryInfo => directoryInfo.GetFileInfo(filename))
     .FirstOrDefault(fileInfo => fileInfo.Exists)

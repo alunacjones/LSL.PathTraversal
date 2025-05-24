@@ -7,7 +7,7 @@ namespace LSL.PathTraversal;
 /// <summary>
 /// Holds the static methods that initiate traversal of paths
 /// </summary>
-public static class PathTraversal
+public static class TraversePath
 {
     /// <summary>
     /// Starts enumerating all paths from initialPath back up to the root of
