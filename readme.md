@@ -27,7 +27,7 @@ var fileInfo = TraversePath.Enumerate()
 // otherwise fileInfo will be null
 ```
 <!-- HIDE -->
-<!-- ## Further Documentation
+## Further Documentation
 
-More in-depth documentation can be found [here](https://alunacjones.github.io/LSL.PathTraversal/) -->
+More in-depth documentation can be found [here](https://alunacjones.github.io/LSL.PathTraversal/)
 <!-- END:HIDE -->
